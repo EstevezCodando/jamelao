@@ -2,10 +2,10 @@
 
 # Estrutura
 
-- Captura de dados
-- Processamento de dados
-- CRUD
-- Interface grafica
+- [raiz] Captura de dados
+- [tronco] Processamento de dados
+- [ramos] CRUD
+- [folha] Interface grafica
 
 # Captura de dados
 
@@ -34,11 +34,10 @@ Metadados
 
 - Data da coleta
 
-
 # Processamento de dados
 
-Não deve se conectar em sites. Deve pegar os dados capturados, conciliar com os dados existentes, e inserir na aplicação final
-
+Não deve se conectar em sites. Deve pegar os dados capturados, conciliar com os dados existentes, e inserir na aplicação
+final
 
 # CRUD
 
