@@ -13,4 +13,6 @@ jobs:
     steps:
       - uses: astral-sh/setup-uv@v7.3.0
       - run: uv sync --locked --all-extras --dev
+        working-directory: ./raiz
       - run: uv run -m unittest
+        working-directory: ./raiz
