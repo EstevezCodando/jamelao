@@ -9,4 +9,3 @@ def find_title(html):
 
 if __name__ == "__main__":
     print("ok!")
-    pass
