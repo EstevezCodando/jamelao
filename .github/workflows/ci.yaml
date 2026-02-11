@@ -11,6 +11,7 @@ jobs:
   unittest:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v6.0.2
       - uses: astral-sh/setup-uv@v7.3.0
       - run: uv sync --locked --all-extras --dev
         working-directory: ./raiz
