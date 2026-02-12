@@ -1,5 +1,7 @@
 on:
   - pull_request
+env:
+  RUFF_OUTPUT_FORMAT: github
 jobs:
   ruff:
     runs-on: ubuntu-latest
