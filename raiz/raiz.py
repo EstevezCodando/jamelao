@@ -1,6 +1,5 @@
 import http.client
 import shutil
-import itertools
 from pathlib import Path
 
 from bs4 import BeautifulSoup
