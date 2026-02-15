@@ -1,5 +1,6 @@
 import http.client
 import shutil
+import json
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -27,6 +28,14 @@ def fetch_to_file(*, server_name, request_method, url, expected_status, filename
         shutil.copyfileobj(response, file)
 
 
+def ro_extract(soup):
+    return map(lambda el: el,
+               map(
+                   lambda el: json.loads(el.text),
+                   soup.select("script[type='application/ld+json']")
+               )
+               )
+
 if __name__ == "__main__":
     fetch_to_file(
         server_name="remoteok.com",
@@ -36,5 +45,13 @@ if __name__ == "__main__":
         filename="remoteok.html"
     )
     with open("remoteok.html", 'r') as file:
-        print(find_title(file))
-
+        if not Path("remoteok.jsonl").is_file():
+            with open("remoteok.jsonl", "w") as output:
+                for v in ro_extract(BeautifulSoup(file, 'html.parser')):
+                    output.write(json.dumps({
+                        "title": v["title"],
+                        "company": v["hiringOrganization"]["name"],
+                        "link": v["hiringOrganization"]["sameAs"],
+                        "description": v["description"],
+                    }))
+                    output.write("\n")
