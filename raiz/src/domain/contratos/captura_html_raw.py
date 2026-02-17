@@ -6,7 +6,9 @@ from typing import Annotated, ClassVar, Literal
 
 from pydantic import AnyHttpUrl, BaseModel, Field
 
-Sha256Hex = Annotated[str, Field(min_length=64, max_length=64, pattern=r"^[0-9a-f]{64}$")]
+Sha256Hex = Annotated[
+    str, Field(min_length=64, max_length=64, pattern=r"^[0-9a-f]{64}$")
+]
 
 
 class CapturaHtmlRawRequest(BaseModel):
@@ -46,4 +48,6 @@ class CapturaHtmlRawResponse(BaseModel):
     html_sha256: Sha256Hex | None = None
     tamanho_bytes: int | None = Field(default=None, ge=0)
 
-    capturado_em_utc: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    capturado_em_utc: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
