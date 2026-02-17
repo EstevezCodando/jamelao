@@ -78,7 +78,11 @@ jobs:
         run: |
           set -euo pipefail
           uv run -m unittest discover -s tests -p "test_*.py" -v | tee /tmp/unittest.log
-          grep -Eq "Ran [1-9][0-9]* tests" /tmp/unittest.log || (echo "ERRO: nenhum teste executado" && exit 1)
+          echo "---- BEGIN unittest.log ----"
+          cat /tmp/unittest.log
+          echo "---- END unittest.log ----"
+          grep -Eq "^Ran [1-9][0-9]* tests in " /tmp/unittest.log || (echo "ERRO: nenhum teste executado" && exit 1)
+
 
 
   smoke:
