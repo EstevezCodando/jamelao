@@ -76,10 +76,10 @@ jobs:
         env:
           PYTHONPATH: src
         run: |
-          set -e
-          saida="$(uv run -m unittest discover -s tests -p 'test_*.py' -v)"
-          echo "$saida"
-          echo "$saida" | grep -Eq "Ran [1-9][0-9]* tests" || (echo "ERRO: nenhum teste executado" && exit 1)
+          set -euo pipefail
+          uv run -m unittest discover -s tests -p "test_*.py" -v | tee /tmp/unittest.log
+          grep -Eq "Ran [1-9][0-9]* tests" /tmp/unittest.log || (echo "ERRO: nenhum teste executado" && exit 1)
+
 
   smoke:
     runs-on: ubuntu-latest
