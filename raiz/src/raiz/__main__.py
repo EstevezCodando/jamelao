@@ -12,28 +12,25 @@ from raiz.remoteok import (
     extrair_jsonld,
 )
 
+REMOTEOK_SERVER = "remoteok.com"
+REMOTEOK_PATH = "/?tags=software&action=get_jobs&premium=0&pagination=1&offset="
+
 
 def main() -> None:
     req = CapturaHtmlRawRequest(
-        url="https://remoteok.com/?tags=software&action=get_jobs&premium=0&pagination=1&offset=",
+        url=f"https://{REMOTEOK_SERVER}{REMOTEOK_PATH}",
         source="remoteok",
-        user_agent=None,
-        usar_apify_proxy=False,
-        socks_proxy_url=None,
     )
 
-    chave = req.chave_deterministica()
-
-    pasta_saida = Path("data") / "raw" / req.source / chave
+    pasta_saida = Path("data") / "raw" / req.source / req.chave_deterministica()
     pasta_saida.mkdir(parents=True, exist_ok=True)
 
     caminho_html = pasta_saida / "captura.html"
     caminho_jsonl = pasta_saida / "extracao.jsonl"
 
     baixar_para_arquivo(
-        server_name="remoteok.com",
-        request_method="GET",
-        url="/?tags=software&action=get_jobs&premium=0&pagination=1&offset=",
+        server_name=REMOTEOK_SERVER,
+        url=REMOTEOK_PATH,
         expected_status=200,
         filename=str(caminho_html),
     )
