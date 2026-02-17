@@ -4,6 +4,7 @@ import hashlib
 from typing import Annotated
 
 from pydantic import AnyHttpUrl, BaseModel, Field
+"""tentativa de melhorar o codigo e tirar verbosidade"""
 
 Sha256Hex = Annotated[
     str, Field(min_length=64, max_length=64, pattern=r"^[0-9a-f]{64}$")
