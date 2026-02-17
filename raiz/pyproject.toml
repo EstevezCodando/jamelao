@@ -3,5 +3,6 @@ name = "raiz"
 version = "0.0.1"
 requires-python = "~=3.12.0"
 dependencies = [
-    "beautifulsoup4==4.14.3"
+    "beautifulsoup4==4.14.3",
+    "pydantic>=2.12.5",
 ]

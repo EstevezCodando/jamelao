@@ -1,5 +1,36 @@
+# IDE
 .idea/
-**/__pycache__/
-**.html
-**.iml
-**.jsonl
+*.iml
+
+# Ambientes virtuais e ferramentas
+.venv/
+.uv/
+uv.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Logs e relatórios locais
+*.log
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build/packaging
+build/
+dist/
+*.egg-info/
+
+# Dados e artefatos do scraping (bruto)
+data/
+remoteok.html
+remoteok.jsonl
+*.html.tmp
+*.jsonl.tmp
+
+# Arquivos de inventário local (você gerou estrutura_*.txt)
+estrutura*.txt
