@@ -100,7 +100,8 @@ jobs:
           PYTHONPATH: src
         run: |
           set -euo pipefail
-          uv run -c "import importlib; importlib.import_module('raiz'); print('Import do pacote raiz OK')"
+          uv run python -c "import importlib; importlib.import_module('raiz'); print('Import do pacote raiz OK')"
+
 
   deploy:
     runs-on: ubuntu-latest
