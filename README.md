@@ -46,3 +46,10 @@ Terá uma API REST para que o processador insira os dados
 # Interface grafica
 
 E tera uma interface grafica (SPA + REST), para navegar nos dados.
+
+## Executando o raiz
+
+PYTHONPATH=src uv run -m raiz
+
+
+PYTHONPATH=src uv run -m unittest discover -s tests -p "test\_\*.py" -v
