@@ -10,12 +10,12 @@ from bs4 import BeautifulSoup
 
 
 def baixar_para_arquivo(
-        *,
-        server_name: str,
-        request_method: str,
-        url: str,
-        expected_status: int,
-        filename: str,
+    *,
+    server_name: str,
+    request_method: str,
+    url: str,
+    expected_status: int,
+    filename: str,
 ) -> None:
     caminho = Path(filename)
     if caminho.is_file():
@@ -50,7 +50,9 @@ def extrair_jobs_minimos_de_jsonld(itens_jsonld: Iterable[dict]) -> Iterator[dic
         }
 
 
-def escrever_jsonl_se_nao_existir(*, caminho_jsonl: str, registros: Iterable[dict]) -> None:
+def escrever_jsonl_se_nao_existir(
+    *, caminho_jsonl: str, registros: Iterable[dict]
+) -> None:
     caminho = Path(caminho_jsonl)
     if caminho.is_file():
         return
