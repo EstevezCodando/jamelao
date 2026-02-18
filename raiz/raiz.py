@@ -8,6 +8,7 @@ import bs4
 
 import raiz.remoteok as ro
 
+
 def fetch_to_file(*, server_name, request_method, url, expected_status, filename, query_string):
     file_path = pathlib.Path(filename)
     if file_path.is_file():
@@ -24,14 +25,18 @@ def fetch_to_file(*, server_name, request_method, url, expected_status, filename
 
 def fetch_all(vs):
     for v in vs:
-        filename = pathlib.Path(v["base_dir"], "index.html")
+        base_dir = v["base_dir"]
+        filename = pathlib.Path(base_dir, "index.html")
+        base_dir.mkdir(parents=True, exist_ok=True)
         fetch_to_file(
-            server_name=v["server_name"],
-            request_method="GET",
-            url="/",
-            query_string="tags=software&action=get_jobs&premium=0&pagination=1&offset=",
-            expected_status=200,
-            filename=filename
+            ## TODO: Paginacao
+            **v["next_request"](dict(server_name=v["server_name"],
+                                     request_method="GET",
+                                     url="/",
+                                     query_string="tags=software&action=get_jobs&premium=0&pagination=1&offset=",
+                                     expected_status=200,
+                                     filename=filename),
+                                0)
         )
         if v["target_file"].is_file():
             return
@@ -50,17 +55,22 @@ def date_como_nome_de_pasta(now):
 def main():
     current_id = date_como_nome_de_pasta(datetime.datetime.now())
     target_dir = pathlib.Path("data", current_id)
-    base_dir = pathlib.Path(target_dir, "remoteok")
-    target_file = pathlib.Path(base_dir, "target.jsonl")
-    base_dir.mkdir(parents=True, exist_ok=True)
-
     fetches = [
         dict(
             server_name="remoteok.com",
             extract=ro.ro_extract,
-            base_dir=base_dir,
-            target_file=target_file,
-        )
+            base_dir=pathlib.Path(target_dir, "remoteok"),
+            next_request=ro.next_request,
+            target_file=pathlib.Path(target_dir, "remoteok", "target.jsonl"),
+        ),
+        ## TODO: Proxima implementacao
+        # dict(
+        #     server_name="es.indeed.com",
+        #     extract=indeed.extract,
+        #     base_dir=pathlib.Path(target_dir, "indeed"),
+        #     next_request=indeed.next_request,
+        #     target_file=pathlib.Path(target_dir, "indeed", "target.jsonl"),
+        # ),
     ]
     fetch_all(fetches)
 

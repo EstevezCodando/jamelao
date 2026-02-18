@@ -19,3 +19,8 @@ def ro_extract(soup):
         soup.select("script[type='application/ld+json']")
     )
                )
+
+
+def next_request(request, offset):
+    query_string = f"tags=software&action=get_jobs&premium=0&pagination=1&offset={offset}"
+    return dict(**request, query_string=query_string)
