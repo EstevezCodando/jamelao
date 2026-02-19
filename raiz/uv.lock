@@ -85,11 +85,11 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = "==4.14.3" },
-    { name = "pydantic", specifier = ">=2.12.5" },
+    { name = "pydantic", specifier = "==2.12.5" },
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "ruff", specifier = ">=0.15.1" }]
+dev = [{ name = "ruff", specifier = "==0.15.1" }]
 
 [[package]]
 name = "ruff"
