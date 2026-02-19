@@ -7,15 +7,16 @@ import shutil
 import bs4
 
 import raiz.remoteok as ro
+import raiz.indeed as indeed
 
 
-def fetch_to_file(*, server_name, request_method, url, expected_status, filename, query_string):
+def fetch_to_file(*, server_name, request_method, url, expected_status, filename, query_string, headers):
     file_path = pathlib.Path(filename)
     if file_path.is_file():
         ## Already exists
-        return None
+        return
     conn = http.client.HTTPSConnection(server_name)
-    conn.request(request_method, f"{url}?{query_string}")
+    conn.request(request_method, f"{url}?{query_string}", headers=headers)
     response = conn.getresponse()
     if not (expected_status == response.status):
         raise Exception("Unexpected status code")
@@ -63,14 +64,14 @@ def main():
             next_request=ro.next_request,
             target_file=pathlib.Path(target_dir, "remoteok", "target.jsonl"),
         ),
-        ## TODO: Proxima implementacao
-        # dict(
-        #     server_name="es.indeed.com",
-        #     extract=indeed.extract,
-        #     base_dir=pathlib.Path(target_dir, "indeed"),
-        #     next_request=indeed.next_request,
-        #     target_file=pathlib.Path(target_dir, "indeed", "target.jsonl"),
-        # ),
+        dict(
+            server_name="es.indeed.com",
+            extract=indeed.extract,
+            first_request=indeed.first_request,
+            base_dir=pathlib.Path(target_dir, "indeed"),
+            next_request=indeed.next_request,
+            target_file=pathlib.Path(target_dir, "indeed", "target.jsonl"),
+        ),
     ]
     fetch_all(fetches)
 
