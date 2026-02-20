@@ -5,8 +5,8 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 from domain.contratos.captura_html_raw import CapturaHtmlRawRequest
+import raiz.core as r
 from raiz.remoteok import (
-    baixar_para_arquivo,
     escrever_jsonl_se_nao_existir,
     extrair_jobs_minimos_de_jsonld,
     extrair_jsonld,
@@ -28,18 +28,20 @@ def main() -> None:
     caminho_html = pasta_saida / "captura.html"
     caminho_jsonl = pasta_saida / "extracao.jsonl"
 
-    baixar_para_arquivo(
+    r.fetch_to_file(
         server_name=REMOTEOK_SERVER,
         url=REMOTEOK_PATH,
         expected_status=200,
-        filename=str(caminho_html),
+        filename=caminho_html,
+        headers={},
+        query_string={},
+        request_method="GET",
     )
 
     with open(caminho_html, "r", encoding="utf-8") as arquivo:
         sopa = BeautifulSoup(arquivo, "html.parser")
-
-    registros = extrair_jobs_minimos_de_jsonld(extrair_jsonld(sopa))
-    escrever_jsonl_se_nao_existir(caminho_jsonl=str(caminho_jsonl), registros=registros)
+        registros = extrair_jobs_minimos_de_jsonld(extrair_jsonld(sopa))
+        escrever_jsonl_se_nao_existir(caminho=caminho_jsonl, registros=registros)
 
 
 if __name__ == "__main__":

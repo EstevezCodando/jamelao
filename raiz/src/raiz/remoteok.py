@@ -43,8 +43,7 @@ def extrair_jobs_minimos_de_jsonld(itens_jsonld: Iterable[dict]) -> Iterator[dic
         }
 
 
-def escrever_jsonl_se_nao_existir(*, caminho_jsonl: str, registros: Iterable[dict]) -> None:
-    caminho = Path(caminho_jsonl)
+def escrever_jsonl_se_nao_existir(*, caminho: Path, registros: Iterable[dict]) -> None:
     if caminho.is_file():
         return
 
