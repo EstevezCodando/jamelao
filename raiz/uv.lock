@@ -89,7 +89,7 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "ruff", specifier = "==0.15.1" }]
+dev = [{ name = "ruff", specifier = ">=0.6.0" }]
 
 [[package]]
 name = "ruff"
