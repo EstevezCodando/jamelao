@@ -10,19 +10,19 @@ from raiz.remoteok import extrair as extrair_remoteok
 class Provedor:
     nome: str
     host: str
-    caminho: str  # path + query, sempre relativo, sempre iniciando com "/"
+    proxima_pagina: Callable[[int], str]
     extrair: Callable[[BeautifulSoup], Iterator[dict]]
 
     @property
     def url_absoluta(self) -> str:
-        return f"https://{self.host}{self.caminho}"
+        return f"https://{self.host}{self.proxima_pagina(0)}"
 
 
 PROVEDORES: dict[str, Provedor] = {
     "remoteok": Provedor(
         nome="remoteok",
         host="remoteok.com",
-        caminho="/?tags=software&action=get_jobs&premium=0&pagination=1&offset=",
+        proxima_pagina=lambda p: f"/?tags=software&action=get_jobs&premium=0&pagination=1&offset={p * 10}",
         extrair=extrair_remoteok,
     ),
 }

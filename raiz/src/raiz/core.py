@@ -27,7 +27,6 @@ def baixar_para_arquivo(*, host: str, caminho: str, expected_status: int, destin
 
 
 def escrever_jsonl_se_nao_existir(*, destino: Path, registros: Iterable[dict]) -> None:
-
     if destino.is_file():
         return
 
@@ -36,26 +35,35 @@ def escrever_jsonl_se_nao_existir(*, destino: Path, registros: Iterable[dict]) -
             saida.write(json.dumps(r, ensure_ascii=False) + "\n")
 
 
-def capturar(provedor: Provedor, pasta_raiz: Path) -> None:
-    chave = chave_deterministica(provedor=provedor.nome, url_absoluta=provedor.url_absoluta)
+def contar_linhas(caminho: Path) -> int:
+    with open(caminho, encoding="utf-8") as f:
+        return sum(1 for linha in f if linha.strip())
 
-    pasta = pasta_raiz / provedor.nome / chave
-    pasta.mkdir(parents=True, exist_ok=True)
 
+def _processar_pagina(provedor: Provedor, pasta: Path, caminho: str) -> int:
     caminho_html = pasta / "captura.html"
     caminho_jsonl = pasta / "extracao.jsonl"
 
-    baixar_para_arquivo(
-        host=provedor.host,
-        caminho=provedor.caminho,
-        expected_status=200,
-        destino=caminho_html,
-    )
+    baixar_para_arquivo(host=provedor.host, caminho=caminho, expected_status=200, destino=caminho_html)
 
     with open(caminho_html, encoding="utf-8") as arquivo:
         sopa = BeautifulSoup(arquivo, "html.parser")
 
-    escrever_jsonl_se_nao_existir(
-        destino=caminho_jsonl,
-        registros=provedor.extrair(sopa),
-    )
+    escrever_jsonl_se_nao_existir(destino=caminho_jsonl, registros=provedor.extrair(sopa))
+
+    return contar_linhas(caminho_jsonl)
+
+
+def coletar(provedor: Provedor, pasta_raiz: Path, limite_paginas: int = 5) -> None:
+    for pagina in range(limite_paginas):
+        caminho = provedor.proxima_pagina(pagina)
+        chave = chave_deterministica(
+            provedor=provedor.nome,
+            url_absoluta=f"https://{provedor.host}{caminho}",
+        )
+
+        pasta = pasta_raiz / provedor.nome / chave
+        pasta.mkdir(parents=True, exist_ok=True)
+
+        if _processar_pagina(provedor, pasta, caminho) == 0:
+            break

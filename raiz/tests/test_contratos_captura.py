@@ -33,20 +33,30 @@ class TestProvedor(unittest.TestCase):
     def test_remoteok_existe_no_mapa(self) -> None:
         self.assertIn("remoteok", PROVEDORES)
 
-    def test_url_absoluta_monta_corretamente(self) -> None:
-        p = PROVEDORES["remoteok"]
-        self.assertEqual(p.url_absoluta, f"https://{p.host}{p.caminho}")
+    def test_url_absoluta_inicia_com_https(self) -> None:
+        self.assertTrue(PROVEDORES["remoteok"].url_absoluta.startswith("https://"))
 
-    def test_caminho_inicia_com_barra(self) -> None:
-        self.assertTrue(PROVEDORES["remoteok"].caminho.startswith("/"))
+    def test_url_absoluta_contem_o_host(self) -> None:
+        p = PROVEDORES["remoteok"]
+        self.assertIn(p.host, p.url_absoluta)
+
+    def test_proxima_pagina_retorna_caminho_relativo(self) -> None:
+        p = PROVEDORES["remoteok"]
+        self.assertTrue(p.proxima_pagina(0).startswith("/"))
+
+    def test_proxima_pagina_difere_entre_paginas(self) -> None:
+        p = PROVEDORES["remoteok"]
+        self.assertNotEqual(p.proxima_pagina(0), p.proxima_pagina(1))
 
     def test_provedor_e_imutavel(self) -> None:
         with self.assertRaises(Exception):
             PROVEDORES["remoteok"].nome = "outro"  # type: ignore[misc]
 
     def test_provedor_tem_funcao_extrair(self) -> None:
-        p = PROVEDORES["remoteok"]
-        self.assertTrue(callable(p.extrair))
+        self.assertTrue(callable(PROVEDORES["remoteok"].extrair))
+
+    def test_provedor_tem_funcao_proxima_pagina(self) -> None:
+        self.assertTrue(callable(PROVEDORES["remoteok"].proxima_pagina))
 
 
 if __name__ == "__main__":
