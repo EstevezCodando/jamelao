@@ -2,7 +2,7 @@ import unittest
 
 from bs4 import BeautifulSoup
 
-from raiz.remoteok import extrair_jsonld, extrair_jobs_minimos_de_jsonld
+from raiz.remoteok import extrair, extrair_jsonld, extrair_jobs_minimos_de_jsonld
 
 HTML_COM_JOB = """
 <html><body>
@@ -30,10 +30,16 @@ class TestExtrairJobsMinimos(unittest.TestCase):
         itens = list(extrair_jobs_minimos_de_jsonld(extrair_jsonld(sopa)))
 
         self.assertEqual(len(itens), 1)
-        self.assertEqual(itens[0]["title"],   "Senior Engineer")
-        self.assertEqual(itens[0]["company"], "ACME")
-        self.assertEqual(itens[0]["link"],    "https://acme.com")
+        self.assertEqual(itens[0]["title"],       "Senior Engineer")
+        self.assertEqual(itens[0]["company"],     "ACME")
+        self.assertEqual(itens[0]["link"],        "https://acme.com")
         self.assertEqual(itens[0]["description"], "Descrição do cargo")
+
+    def test_extrair_e_atalho_para_pipeline_completo(self) -> None:
+        sopa = BeautifulSoup(HTML_COM_JOB, "html.parser")
+        itens = list(extrair(sopa))
+        self.assertEqual(len(itens), 1)
+        self.assertEqual(itens[0]["title"], "Senior Engineer")
 
 
 if __name__ == "__main__":

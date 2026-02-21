@@ -44,6 +44,10 @@ class TestProvedor(unittest.TestCase):
         with self.assertRaises(Exception):
             PROVEDORES["remoteok"].nome = "outro"  # type: ignore[misc]
 
+    def test_provedor_tem_funcao_extrair(self) -> None:
+        p = PROVEDORES["remoteok"]
+        self.assertTrue(callable(p.extrair))
+
 
 if __name__ == "__main__":
     unittest.main()
