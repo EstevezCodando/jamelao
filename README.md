@@ -49,7 +49,16 @@ E tera uma interface grafica (SPA + REST), para navegar nos dados.
 
 ## Executando o raiz
 
-PYTHONPATH=src uv run -m raiz
+Captura de dados
 
+```shell
+## dentro de ./raiz
+uv run -m raiz
+```
 
-PYTHONPATH=src uv run -m unittest discover -s tests -p "test\_\*.py" -v
+Testes de unidade
+
+```shell
+## dentro de ./raiz
+uv run -m unittest
+```

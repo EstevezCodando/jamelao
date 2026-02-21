@@ -1,31 +1,7 @@
-from __future__ import annotations
-
-import http.client
 import json
-import shutil
-from pathlib import Path
 from typing import Iterable, Iterator
 
 from bs4 import BeautifulSoup
-
-
-def baixar_para_arquivo(*, server_name: str, url: str, expected_status: int, filename: str) -> None:
-    caminho = Path(filename)
-    if caminho.is_file():
-        return
-
-    conn = http.client.HTTPSConnection(server_name)
-    try:
-        conn.request("GET", url)
-        response = conn.getresponse()
-        if expected_status != response.status:
-            raise RuntimeError(
-                f"Status inesperado {response.status} ao requisitar GET {server_name}{url}"
-            )
-        with open(caminho, "wb") as arquivo:
-            shutil.copyfileobj(response, arquivo)
-    finally:
-        conn.close()
 
 
 def extrair_jsonld(sopa: BeautifulSoup) -> Iterator[dict]:
@@ -33,8 +9,8 @@ def extrair_jsonld(sopa: BeautifulSoup) -> Iterator[dict]:
         yield json.loads(el.text)
 
 
-def extrair_jobs_minimos_de_jsonld(itens_jsonld: Iterable[dict]) -> Iterator[dict]:
-    for v in itens_jsonld:
+def extrair_jobs_minimos_de_jsonld(itens: Iterable[dict]) -> Iterator[dict]:
+    for v in itens:
         yield {
             "title": v["title"],
             "company": v["hiringOrganization"]["name"],
@@ -43,11 +19,6 @@ def extrair_jobs_minimos_de_jsonld(itens_jsonld: Iterable[dict]) -> Iterator[dic
         }
 
 
-def escrever_jsonl_se_nao_existir(*, caminho: Path, registros: Iterable[dict]) -> None:
-    if caminho.is_file():
-        return
-
-    with open(caminho, "w", encoding="utf-8", newline="\n") as saida:
-        for r in registros:
-            saida.write(json.dumps(r, ensure_ascii=False))
-            saida.write("\n")
+def extrair(sopa: BeautifulSoup) -> Iterator[dict]:
+    """Ponto de entrada para o core: recebe sopa, devolve registros."""
+    return extrair_jobs_minimos_de_jsonld(extrair_jsonld(sopa))
