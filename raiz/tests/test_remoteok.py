@@ -40,7 +40,3 @@ class TestExtrairJobsMinimos(unittest.TestCase):
         itens = list(extrair(sopa))
         self.assertEqual(len(itens), 1)
         self.assertEqual(itens[0]["title"], "Senior Engineer")
-
-
-if __name__ == "__main__":
-    unittest.main()
