@@ -1,12 +1,45 @@
-""""
-Funções comuns que serão usadas por multiplos provedores de dados
-"""
+"""Funções comuns que serão usadas por múltiplos provedores de dados."""
 import http.client
 import json
 import pathlib
 import shutil
+from pathlib import Path
+from typing import Iterable
 
 import bs4
+
+
+def baixar_para_arquivo(*, host: str, caminho: str, expected_status: int, destino: Path) -> None:
+    """Baixa um recurso HTTP(S) para um arquivo local, se ainda não existir."""
+    if destino.is_file():
+        return
+
+    conn = http.client.HTTPSConnection(host)
+    try:
+        conn.request("GET", caminho)
+        resposta = conn.getresponse()
+        if resposta.status != expected_status:
+            raise RuntimeError(f"Status inesperado {resposta.status} em GET {host}{caminho}")
+        with open(destino, "wb") as saida:
+            shutil.copyfileobj(resposta, saida)
+    finally:
+        conn.close()
+
+
+def escrever_jsonl_se_nao_existir(*, destino: Path, registros: Iterable[dict]) -> None:
+    """Escreve JSONL no destino apenas se o arquivo ainda não existir."""
+    if destino.is_file():
+        return
+
+    with open(destino, "w", encoding="utf-8", newline="\n") as saida:
+        for r in registros:
+            saida.write(json.dumps(r, ensure_ascii=False) + "\n")
+
+
+def contar_linhas(caminho: Path) -> int:
+    """Conta linhas não vazias de um arquivo."""
+    with open(caminho, encoding="utf-8") as f:
+        return sum(1 for linha in f if linha.strip())
 
 
 def fetch_to_file(*, server_name, request_method, url, expected_status, filename, query_string, headers):
