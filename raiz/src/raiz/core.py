@@ -1,4 +1,5 @@
 """Funções comuns que serão usadas por múltiplos provedores de dados."""
+
 import http.client
 import json
 import pathlib
@@ -7,6 +8,9 @@ from pathlib import Path
 from typing import Iterable
 
 import bs4
+
+from raiz.chave import chave_deterministica
+from raiz.provedores import Provedor
 
 
 def baixar_para_arquivo(*, host: str, caminho: str, expected_status: int, destino: Path) -> None:
@@ -42,6 +46,37 @@ def contar_linhas(caminho: Path) -> int:
         return sum(1 for linha in f if linha.strip())
 
 
+def _processar_pagina(provedor: Provedor, pasta: Path, caminho: str) -> int:
+    caminho_html = pasta / "captura.html"
+    caminho_jsonl = pasta / "extracao.jsonl"
+
+    baixar_para_arquivo(host=provedor.host, caminho=caminho, expected_status=200, destino=caminho_html)
+
+    with open(caminho_html, encoding="utf-8") as arquivo:
+        sopa = bs4.BeautifulSoup(arquivo, "html.parser")
+
+    escrever_jsonl_se_nao_existir(destino=caminho_jsonl, registros=provedor.extrair(sopa))
+
+    return contar_linhas(caminho_jsonl)
+
+
+def coletar(provedor: Provedor, pasta_raiz: Path, limite_paginas: int = 5) -> None:
+    """Coleta páginas de um provedor até não haver mais resultados."""
+
+    for pagina in range(limite_paginas):
+        caminho = provedor.proxima_pagina(pagina)
+        chave = chave_deterministica(
+            provedor=provedor.nome,
+            url_absoluta=f"https://{provedor.host}{caminho}",
+        )
+
+        pasta = pasta_raiz / provedor.nome / chave
+        pasta.mkdir(parents=True, exist_ok=True)
+
+        if _processar_pagina(provedor, pasta, caminho) == 0:
+            break
+
+
 def fetch_to_file(*, server_name, request_method, url, expected_status, filename, query_string, headers):
     file_path = pathlib.Path(filename)
     if file_path.is_file():
@@ -58,6 +93,7 @@ def fetch_to_file(*, server_name, request_method, url, expected_status, filename
             shutil.copyfileobj(response, file)
     finally:
         conn.close()
+
 
 def fetch_all(vs):
     for v in vs:
